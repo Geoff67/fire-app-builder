@@ -16,7 +16,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '28.0.2'
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         minSdkVersion 21
@@ -24,6 +24,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+
     }
     buildTypes {
         release {
@@ -34,20 +36,30 @@ android {
             testCoverageEnabled true
         }
     }
-}
+    packagingOptions {
+        pickFirst 'META-INF/LICENSE'
+        exclude 'META-INF/rxjava.properties'
 
-apply plugin: 'jacoco'
-jacoco {
-    version "0.7.1.201405082137"
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    // Set this dependency to use JUnit 4 rules
-    androidTestCompile 'com.android.support.test:rules:0.4.1'
-    androidTestCompile('junit:junit:4.12')
+    compile 'com.android.support:appcompat-v7:23.1.1'
 
-    androidTestCompile('com.android.support.test:runner:0.4.1') {
-        exclude module: 'support-annotations'
+    //Load the version based on user defined in gradle.properties or default
+    if (rootProject.hasProperty('compileUrl')) {
+        compile rootProject.compileUrl
+    } else {
+        compile 'com.brightcove.player:exoplayer:5.0.3'
     }
+
+    compile project(':ModuleInterface')
+    compile project(':UAMP')
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url 'http://repo.brightcove.com/releases' }
 }
